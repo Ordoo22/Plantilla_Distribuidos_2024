@@ -1,6 +1,8 @@
 """Needed classes to implement and serve the RSet type."""
 
 from typing import Optional
+from remotetypes.iterable import Iterable
+
 
 import Ice
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
@@ -38,6 +40,10 @@ class RemoteSet(rt.RSet):
 
     def iter(self, current: Optional[Ice.Current] = None) -> rt.IterablePrx:
         """Create an iterable object."""
+        iterator = Iterable(self._storage_)
+        adapter = current.adapter
+        proxy = adapter.addWithUUID(iterator)
+        return rt.IterablePrx.checkedCast(proxy)
 
     def add(self, item: str, current: Optional[Ice.Current] = None) -> None:
         """Add a new string to the StringSet."""
